@@ -1,0 +1,16 @@
+{
+  "total_analyzed_assets": 100000,
+  "actionable_queue_size": 54805,
+  "tier_distribution": {
+    "P3_INTERNAL_LINKING": 51369,
+    "P4_MONITOR_ONLY": 45195,
+    "P2_TITLE_CTR_REFRESH": 2392,
+    "P1_FULL_OVERHAUL": 1044
+  },
+  "no_go_flag_distribution": {
+    "STANDARD_EDITORIAL_REVIEW": 89579,
+    "REQUIRES_EXECUTIVE_EDITORIAL_REVIEW": 10421
+  },
+  "train_auc": 0.8899,
+  "honest_model_auc": 0.8902
+}
