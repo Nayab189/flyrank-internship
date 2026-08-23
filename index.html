@@ -101,17 +101,30 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;back
 
 <section id="data">
 <h2>2. Data</h2>
-<p>The study uses the <strong>FlyRank ML Internship Warehouse</strong> release, with data aggregated from <code>fact_content_daily_performance</code> and joined to <code>dim_content</code>. The feature window is 2026-03-01 through 2026-03-31; the label window is 2026-04-01 through 2026-04-30, with strict temporal separation.</p>
+<p>This study uses the <strong>FlyRank Internship — Pseudonymized Warehouse Release (v20260703)</strong>, a gated, pseudonymized warehouse provided by FlyRank for anonymized research and education use, hosted on <a href="https://huggingface.co/datasets/FlyRank/internship-warehouse" target="_blank" rel="noopener">Hugging Face</a>. The release is a v2 full-history warehouse snapshot exported 2026-07-03, and is star-schema-shaped: a small client dimension and a content dimension, joined to two fact tables at different grains. The warehouse contains approximately <strong>81.8 million rows</strong> in total:</p>
+<table>
+<thead><tr><th>Table</th><th>Rows</th><th>Grain</th></tr></thead>
+<tbody>
+<tr><td><code>dim_clients</code></td><td>104</td><td>one row per pseudonymized client</td></tr>
+<tr><td><code>dim_content</code></td><td>519,606</td><td>one row per pseudonymized content item</td></tr>
+<tr><td><code>fact_content_daily_performance</code></td><td>78,835,655</td><td>one row per report date × pseudonymized client × pseudonymized content item</td></tr>
+<tr><td><code>fact_content_query_90d</code></td><td>2,414,248</td><td>one row per pseudonymized client × content item × query hash, over a fixed 90-day window</td></tr>
+</tbody>
+</table>
+<h3>Data used in this study</h3>
+<p>The 81.8M-row figure above describes the <strong>full warehouse</strong>, not what this study analyzed. This study used two of the four tables — <code>fact_content_daily_performance</code> and <code>dim_content</code> — and a single-month, deterministic slice of the daily-performance table, queried via DuckDB directly over the warehouse's partitioned Parquet files with predicate pushdown on <code>report_date</code> and a row limit, rather than an in-memory load of the full 78.8M-row table. <code>dim_clients</code> and <code>fact_content_query_90d</code> are part of the warehouse and listed above for completeness, but were not used in this study's feature set or model. The feature window is 2026-03-01 through 2026-03-31; the label window is 2026-04-01 through 2026-04-30, with strict temporal separation.</p>
 <table>
 <thead><tr><th>Design element</th><th>Specification</th></tr></thead>
 <tbody>
 <tr><td>Unit of analysis</td><td>One content page (<code>content_id</code>) at a monthly snapshot.</td></tr>
 <tr><td>Feature window</td><td>March 1–31, 2026.</td></tr>
 <tr><td>Label window</td><td>April 1–30, 2026.</td></tr>
-<tr><td>Tables</td><td><code>fact_content_daily_performance</code> and <code>dim_content</code>.</td></tr>
-<tr><td>Rows / columns</td><td>100,000 rows × 14 columns after the study query.</td></tr>
+<tr><td>Tables used</td><td><code>fact_content_daily_performance</code> and <code>dim_content</code> (of the 4 warehouse tables — see above).</td></tr>
+<tr><td>Modeling sample</td><td>100,000 rows (content pages) × 14 columns after the study query — a single-month slice, not the full warehouse.</td></tr>
 </tbody>
 </table>
+<h3>Access and governance</h3>
+<p>Access to the warehouse is gated: it requires accepting the Hugging Face dataset terms and a personal read token. All keys in the release are pseudonymized, salted, and namespaced. Per the dataset terms, this paper and the underlying notebook use the data for anonymized research/education only, make no re-identification attempts, do not redistribute raw data, and expose no client-identifying information in any public output.</p>
 <h3>Privacy and leakage exclusions</h3>
 <table>
 <thead><tr><th>Excluded field</th><th>Reason</th></tr></thead>
@@ -234,6 +247,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;back
 <section id="acknowledgments">
 <h2>8. Acknowledgments & Data Credit</h2>
 <p>Built on the <strong>FlyRank ML Internship dataset</strong>. Data courtesy of <a href="https://flyrank.ai" target="_blank" rel="noopener">flyrank.ai</a>.</p>
+<p><strong>Dataset citation:</strong> FlyRank, &ldquo;FlyRank Internship &mdash; Pseudonymized Warehouse Release (v20260703),&rdquo; Hugging Face Datasets, 2026. <a href="https://huggingface.co/datasets/FlyRank/internship-warehouse" target="_blank" rel="noopener">huggingface.co/datasets/FlyRank/internship-warehouse</a>.</p>
 <p>This work is an internship capstone exercise. Findings are observational and decision-support in nature; the public paper does not expose client names, domains, URLs, or private queries.</p>
 </section>
 </main>
